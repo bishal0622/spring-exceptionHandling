@@ -46,27 +46,35 @@ public class UserController {
         User user = userRepository.findOne(id);
         if (user == null) {
             throw new ResourceNotFoundException("user not found");
-        }
+        }else{
+            return new ResponseEntity<User>(user, HttpStatus.OK);
 
-        return new ResponseEntity<User>(user, HttpStatus.OK);
+        }
     }
 
     @PutMapping("/user/{id}")
     public ResponseEntity<?> editUser(@PathVariable Long id, @RequestBody UserDTO userDTO){
-        System.out.println("*******************************8");
-        System.out.println(userDTO.toString());
-        System.out.println(id);
         User user = userRepository.findOne(id);
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
-        userRepository.save(user);
-        return new ResponseEntity<String>(userDTO.toString(),HttpStatus.OK);
+        if (user == null){
+            throw new ResourceNotFoundException("user not found");
+        }else{
+            user.setUsername(userDTO.getUsername());
+            user.setPassword(userDTO.getPassword());
+            userRepository.save(user);
+            return new ResponseEntity<String>(userDTO.toString(),HttpStatus.OK);
+        }
+
     }
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
         User user = userRepository.findOne(id);
-        userRepository.delete(id);
-        return new ResponseEntity<List<User>>(userRepository.findAll(),HttpStatus.OK);
+        if (user == null) {
+            throw new ResourceNotFoundException("user not found");
+        }else{
+            userRepository.delete(id);
+            return new ResponseEntity<List<User>>(userRepository.findAll(),HttpStatus.OK);
+        }
+
     }
 }
